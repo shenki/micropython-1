@@ -6,6 +6,8 @@ QSTR_DEFS = inc/py/qstrdefs.h inc/microbit/qstrdefsport.h
 HEX_SRC = build/bbc-microbit-classic-gcc-nosd/source/microbit-micropython.hex
 HEX_FINAL = build/firmware.hex
 
+MOUNTPATH := /media/${USER}/MICROBIT
+
 all: yotta
 
 yotta: inc/genhdr/qstrdefs.generated.h inc/genhdr/mpversion.h
@@ -25,13 +27,11 @@ inc/genhdr/mpversion.h: FORCE | tools/makeversionhdr.py
 	$(ECHO) "Creating $@"
 	@$(PYTHON) tools/makeversionhdr.py $@
 
-deploy: $(HEX_FINAL)
+deploy: $(HEX_FINAL) | $(MOUNTPATH)
 	$(ECHO) "Deploying $<"
-	@mount /dev/sdb
-	@sleep 1s
-	@cp $< /mnt/
-	@sleep 1s
-	@umount /mnt
+	cp $< $(MOUNTPATH)
+	sync
+	umount $(MOUNTPATH)
 
 serial:
 	@picocom /dev/ttyACM0 -b 115200
