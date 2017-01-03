@@ -8,7 +8,7 @@ HEX_FINAL = build/firmware.hex
 
 all: yotta
 
-yotta: inc/genhdr/qstrdefs.generated.h
+yotta: inc/genhdr/qstrdefs.generated.h inc/genhdr/mpversion.h
 	@yt build
 	@/bin/cp $(HEX_SRC) $(HEX_FINAL)
 
@@ -18,6 +18,12 @@ inc/genhdr/qstrdefs.generated.h: $(QSTR_DEFS) tools/makeqstrdata.py inc/microbit
 	$(ECHO) "Generating $@"
 	@cat $(QSTR_DEFS) | sed 's/^Q(.*)/"&"/' | $(CPP) -Iinc -Iinc/microbit - | sed 's/^"\(Q(.*)\)"/\1/' > build/qstrdefs.preprocessed.h
 	@$(PYTHON) tools/makeqstrdata.py build/qstrdefs.preprocessed.h > $@
+
+FORCE:
+
+inc/genhdr/mpversion.h: FORCE | tools/makeversionhdr.py
+	$(ECHO) "Creating $@"
+	@$(PYTHON) tools/makeversionhdr.py $@
 
 deploy: $(HEX_FINAL)
 	$(ECHO) "Deploying $<"

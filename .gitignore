@@ -4,3 +4,4 @@ yotta_modules/*
 yotta_targets/*
 *.swp
 __pycache__
+/inc/genhdr/mpversion.h
